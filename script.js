@@ -1,12 +1,9 @@
 var cityList = [];
 var cityname;
 
-// local storage functions
 initCityList();
 initWeather();
 
-
-// This function displays the city entered by the user into the DOM
 function renderCities(){
     $("#cityList").empty();
     $("#cityInput").val("");
@@ -20,7 +17,6 @@ function renderCities(){
     } 
 }
 
-// This function pulls the city list array from local storage
 function initCityList() {
     var storedCities = JSON.parse(localStorage.getItem("cities"));
     
@@ -31,7 +27,6 @@ function initCityList() {
     renderCities();
     }
 
-// This function pull the current city into local storage to display the current weather forecast on reload
 function initWeather() {
     var storedWeather = JSON.parse(localStorage.getItem("currentCity"));
 
@@ -43,19 +38,15 @@ function initWeather() {
     }
 }
 
-// This function saves the city array to local storage
 function storeCityArray() {
     localStorage.setItem("cities", JSON.stringify(cityList));
     }
 
-// This function saves the currently display city to local storage
 function storeCurrentCity() {
 
     localStorage.setItem("currentCity", JSON.stringify(cityname));
 }
       
-
-// Click event handler for city search button
 $("#citySearchBtn").on("click", function(event){
     event.preventDefault();
 
@@ -77,14 +68,12 @@ $("#citySearchBtn").on("click", function(event){
     displayFiveDayForecast();
 });
 
-// Event handler for if the user hits enter after entering the city search term
 $("#cityInput").keypress(function(e){
     if(e.which == 13){
         $("#citySearchBtn").click();
     }
 })
 
-// This function runs the Open Weather API AJAX call and displays the current city, weather, and 5 day forecast to the DOM
 async function displayWeather() {
 
     var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + cityname + "&units=imperial&appid=d3b85d453bf90d469c82e650a0a3da26";
@@ -122,19 +111,14 @@ async function displayWeather() {
             method: "GET"
         })
 
-        // getting UV Index info and setting color class according to value
         var getUVIndex = uvResponse.value;
         var uvNumber = $("<span>");
-        if (getUVIndex > 0 && getUVIndex <= 2.99){
-            uvNumber.addClass("low");
-        }else if(getUVIndex >= 3 && getUVIndex <= 5.99){
+        if (getUVIndex > 0 && getUVIndex <= 3.99){
+            uvNumber.addClass("favorable");
+        }else if(getUVIndex >= 3 && getUVIndex <= 7.99){
             uvNumber.addClass("moderate");
-        }else if(getUVIndex >= 6 && getUVIndex <= 7.99){
-            uvNumber.addClass("high");
-        }else if(getUVIndex >= 8 && getUVIndex <= 10.99){
-            uvNumber.addClass("vhigh");
         }else{
-            uvNumber.addClass("extreme");
+            uvNumber.addClass("severe");
         } 
         uvNumber.text(getUVIndex);
         var uvIndexEl = $("<p class='card-text'>").text("UV Index: ");
@@ -143,10 +127,9 @@ async function displayWeather() {
         $("#weatherContainer").html(currentWeatherDiv);
 }
 
-// This function runs the AJAX call for the 5 day forecast and displays them to the DOM
 async function displayFiveDayForecast() {
 
-    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+cityname+"&units=imperial&appid=d3b85d453bf90d469c82e650a0a3da26";
+    var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+cityname+"&units=imperial&appid=5f8c7a3338e1652da7fde00a71c30e21";
 
     var response = await $.ajax({
         url: queryURL,
@@ -183,7 +166,6 @@ async function displayFiveDayForecast() {
       $("#forecastContainer").html(forecastDiv);
     }
 
-// This function is used to pass the city in the history list to the displayWeather function
 function historyDisplayWeather(){
     cityname = $(this).attr("data-name");
     displayWeather();
